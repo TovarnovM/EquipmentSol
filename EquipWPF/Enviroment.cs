@@ -6,15 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace EquipWPF {
-    public interface IUnit {
-        Enviroment Owner { get; set; }
-        string Name { get; set; }
-        void Update();
-        bool Enabled { get; set; }
-        bool Dead { get; set; }
-        Vector Pos { get; }
-    }
-
     public class Enviroment {
         public List<IUnit> Units { get; private set; } = new List<IUnit>();
         public double Time { get; set; }

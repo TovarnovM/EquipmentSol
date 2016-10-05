@@ -55,11 +55,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IUnit.cs" />
+    <Compile Include="IWeapon.cs" />
+    <Compile Include="MyRange.cs" />
+    <Compile Include="UnitBase.cs" />
+    <Compile Include="UnitWithHPandGun.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="AimSurface.cs" />
+    <Compile Include="IAimSurface.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -96,6 +101,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Interpolator\InterpSolution\MyRandom\MyRandom.csproj">
+      <Project>{db584195-10a3-4633-9388-919f7b8fe87a}</Project>
+      <Name>MyRandom</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
