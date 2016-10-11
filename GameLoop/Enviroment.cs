@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Serialization;
 
-namespace EquipWPF {
+namespace GameLoop {
     public class Enviroment {
         public List<IUnit> Units { get; private set; } = new List<IUnit>();
         public double Time { get; set; }
@@ -30,6 +32,9 @@ namespace EquipWPF {
         public void EnableAllUnits() {
             Units.ForEach(u => u.Enabled = true);
         }
+        public IEnumerable<T> GetUnitsSpec<T>(bool enabletMatters = true) {
+            return Units.Where(u => (!enabletMatters || u.Enabled) && u is T).Cast<T>();
+        }
         public void Start() {
             Time = 0d;
             while(true) {
@@ -38,6 +43,28 @@ namespace EquipWPF {
                     break;
                 Time += dT;
             }
+        }
+
+        public static void SaveToXmlFile<T>(T saveMe, string filePath) {
+            try {
+                XmlSerializer serial = new XmlSerializer(typeof(T));
+                var sw = new StreamWriter(filePath);
+                serial.Serialize(sw,saveMe);
+                sw.Close();
+            }
+            catch(Exception) { }
+        }
+
+        public static T LoadFromXmlFile<T>(string filePath) {
+            try {
+                XmlSerializer serial = new XmlSerializer(typeof(T));
+                var sw = new StreamReader(filePath);
+                T result = (T)serial.Deserialize(sw);
+                sw.Close();
+                return result;
+            }
+            catch(Exception) { }
+            return default(T);
         }
     }
 }

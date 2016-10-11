@@ -57,6 +57,10 @@ namespace StateTests {
                 .Permit(Trigger.HungUp,State.OffHook)
                 .Permit(Trigger.PhoneHurledAgainstWall,State.PhoneDestroyed);
 
+            
+            
+
+
             Console.WriteLine("======Print(phoneCall);=======");
             Print(phoneCall);
             Console.WriteLine("======Fire(phoneCall,Trigger.CallDialed);=======");
@@ -87,7 +91,9 @@ namespace StateTests {
             Fire(phoneCall,Trigger.HungUp);
             Print(phoneCall);
 
-            
+            Console.WriteLine(phoneCall.ToDotGraph());
+
+
 
             Console.WriteLine("Press any key...");
             Console.ReadKey(true);
