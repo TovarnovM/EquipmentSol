@@ -8,8 +8,8 @@ using System.Windows;
 namespace GameLoop {
     public class UnitWithHP : UnitWithPos, ILiveUnit {
         public Dictionary<string,List<Tuple<double,double>>> Hitters { get; set; } = new Dictionary<string,List<Tuple<double,double>>>();
-        public double HP { get; set; }
-        public bool Dead { get; set; }
+        public double HP { get; set; } = 1;
+        public bool Dead { get; set; } = false;
         public UnitWithHP():base(nameof(UnitWithHP)) {
 
         }

@@ -1,5 +1,6 @@
 ﻿using Interpolator;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,14 @@ using System.Windows;
 
 namespace GameLoop {
     public interface IAimSurface {
+        IList<Rect> Boxes { get; }
         double getDamage(Vector hit);
         Vector AimPoint { get; set; }
     }
     public interface IUnit {
         double UnitTime { get; set; }
         double DeltaT { get; }
-        Enviroment Owner { get; set; }
+        GLEnviroment Owner { get; set; }
         string Name { get; set; }
         void Update();
         bool Enabled { get; set; }

@@ -27,7 +27,7 @@ namespace GameLoop {
         }
         public string Name { get; set; }
         [XmlIgnore]
-        public Enviroment Owner { get; set; }
+        public GLEnviroment Owner { get; set; }
 
         public double DeltaT {
             get {
@@ -53,6 +53,7 @@ namespace GameLoop {
         public UnitBase(string name) {
             rnd = new MyRandom();
             Name = name;
+            _enabled = true;
         }
 
     }

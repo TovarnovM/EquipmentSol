@@ -6,6 +6,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameLoop;
+using OxyPlot.Series;
+using System.Windows;
+using OxyPlot.Annotations;
 
 namespace EquipWPF {
     public class MainViewModel: INotifyPropertyChanged {
@@ -34,6 +38,103 @@ namespace EquipWPF {
             linearAxis2.MinorGridlineStyle = LineStyle.Dot;
             m.Axes.Add(linearAxis2);
             return m;
+        }
+
+        public void OneTest() {
+            
+            var we = new Fighter("We");
+            var surf = new AimSurf();
+            surf.AddBox(-0.1,0,0.1,1,0.1);
+            surf.AimPoint = new Vector(0,0.5);
+            we.AimSurf = surf;
+            we.Weapon = WeaponFactory.Get("AK74");
+
+            var enemy = new Fighter("enemy");
+            surf = new AimSurf();
+            surf.AddBox(-0.2,0,0.2,1,1);
+            surf.AddBox(-0.1,0.2,0.1,0.5,0.1);
+            surf.AimPoint = new Vector(0,0.5);
+            enemy.AimSurf = surf;
+            enemy.Weapon = WeaponFactory.Get("AK74");
+
+            enemy.Target = we;
+            we.Target = enemy;
+
+            enemy.TimeToNextLine = 3;
+            we.TimeToNextLine = 1;
+
+            we.Pos = new Vector(0,0);
+            enemy.Pos = new Vector(200,0);
+
+            we.HP = 100;
+            enemy.HP = 200;
+
+
+            var env = new GLEnviroment();
+            env.AddUnit(we);
+            env.AddUnit(enemy);
+            env.StopFunc += () => {
+                return we.Dead || enemy.Dead;
+            };
+
+            env.Start();
+
+
+            DrawAim(Model1,enemy);
+            DrawAim(Model2,we);
+
+
+        }
+
+        public void DrawAim(PlotModel pm, Fighter f) {
+            pm.Series.Clear();
+            var ss = new ScatterSeries() {
+                MarkerType = MarkerType.Star,
+                MarkerSize = 4,
+                MarkerFill = OxyColors.Red,
+                MarkerStroke = OxyColors.Red,
+                MarkerStrokeThickness = 1,
+               
+            };
+            foreach(var point in f.Hits) {
+                var sp = new ScatterPoint(point.Item2.X,point.Item2.Y,value: point.Item1,tag: "t = " + point.Item1.ToString("G1"));
+         
+                ss.Points.Add(sp);
+            }
+            pm.Series.Add(ss);
+
+            pm.Annotations.Clear();
+
+            foreach(var box in f.AimSurf.Boxes) {
+                var ra = new RectangleAnnotation() {
+                    MinimumX = box.xmin,
+                    MaximumX = box.xmax,
+                    MinimumY = box.ymin,
+                    MaximumY = box.ymax,
+                    Fill = OxyColors.Blue.ChangeSaturation(box.damage),
+                    Layer = AnnotationLayer.BelowSeries
+                };
+                pm.Annotations.Add(ra);
+            }
+
+            var ap = new PointAnnotation() {
+                X = f.AimSurf.AimPoint.X,
+                Y = f.AimSurf.AimPoint.Y,
+                Shape = MarkerType.Plus,
+                Stroke = OxyColors.Green,
+                StrokeThickness = 3,
+                Size = 7,
+                Text = $"({f.AimSurf.AimPoint})",
+                Layer = AnnotationLayer.BelowSeries
+            };
+
+            pm.Annotations.Add(ap);
+
+
+            pm.InvalidatePlot(true);
+
+
+
         }
 
         #region ProgressBar

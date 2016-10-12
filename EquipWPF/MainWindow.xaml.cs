@@ -23,11 +23,14 @@ namespace EquipWPF {
         }
 
         private void button_Click(object sender,RoutedEventArgs e) {
+
             var vm = DataContext as MainViewModel;
-            vm.Progress += 5;
-            vm.Maximum += 5;
+            vm.OneTest();
+
+            //vm.Progress += 5;
+            //vm.Maximum += 5;
             
-            button.Content = $"{ vm.Progress}  {pb.Value}  {vm.Maximum} {pb.Maximum}";
+            //button.Content = $"{ vm.Progress}  {pb.Value}  {vm.Maximum} {pb.Maximum}";
         }
     }
 }

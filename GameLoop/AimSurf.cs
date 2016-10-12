@@ -9,42 +9,74 @@ using System.Globalization;
 
 namespace GameLoop {
     [Serializable]
-    public class AimSurf : IAimSurface {
-        [Serializable]
-        public struct Rect {
-            public double _x, _y, _width, _heigth, _damage;
-            public Rect(double x, double y, double width, double heigth, double damage) {
-                _x = x;
-                _y = y;
-                _width = width;
-                _heigth = heigth;
-                _damage = damage;//0-1
+    public struct Rect {
+        public double xmin, ymin, xmax, ymax, damage;
+        public double Width {
+            get {
+                return xmax - xmin;
             }
-            public double isHit(Vector point) {
-                if ((this._x < point.X) & (point.X < this._x + this._width)) {
-                    if ((this._y - this._heigth < point.Y) & (point.Y < this._y)) {
-                        return this._damage;
-                    }
-                }
-                return 0;
+            set {
+                if(value > 0)
+                    xmax = xmin + value;
+                else
+                    xmin = xmax + value;
             }
         }
+        public double Height {
+            get {
+                return ymax - ymin;
+            }
+            set {
+                if(value > 0)
+                    ymax = ymin + value;
+                else
+                    ymin = ymax + value;
+            }
+        }
+        public Rect(double xmin,double ymin,double xmax,double ymax,double damage) {
+            this.xmin = Math.Min(xmin,xmax);
+            this.ymin = Math.Min(ymin,ymax);
+            this.xmax = Math.Max(xmin,xmax);
+            this.ymax = Math.Max(ymin,ymax);
+            this.damage = damage;//0-1
+        }
+        public double isHit(Vector point) {
+            return isHit(point.X,point.Y);
+        }
+        public double isHit(double hX,double hY) {
+            if((xmin < hX) && (hX < xmax)) {
+                if((ymin < hY) && (hY < ymax)) {
+                    return damage;
+                }
+            }
+            return 0;
+        }
+    }
+    [Serializable]
+    public class AimSurf : IAimSurface {
+        
         public Vector AimPoint { get; set; }
 
-        public List<Rect> Boxes { get; set; } = new List<Rect>();
+        public IList<Rect> Boxes { get; set; } = new List<Rect>();
         //List<Vector> hits = new List<Vector>();
 
         public AimSurf() {
             //
         }
-        public double getDamage(Vector hit) {
-            //hits.Add(hit);
+        public void AddBox(double xmin,double ymin,double xmax,double ymax,double damage) {
+            Boxes.Add(new Rect(xmin,ymin,xmax,ymax,damage));
+        }
+        public double getDamage(double x, double y) {
             for(int i = Boxes.Count - 1; i >= 0; i--) {
-                if (Boxes[i].isHit(hit) != 0) {
-                    return Boxes[i].isHit(hit);
+                if (Boxes[i].isHit(x,y) != 0) {
+                    return Boxes[i].isHit(x,y);
                 }
             }
-            return 0;
+            return 0;        
+        }
+        public double getDamage(Vector hit) {
+            return getDamage(hit.X,hit.Y);
+
         }
         public void loadFromCSV(String Filename) {
             string[] strings = File.ReadAllLines(Filename);

@@ -17,15 +17,9 @@
         </Grid.RowDefinitions>
         <TabControl x:Name="tabControl" Grid.Row="0" Margin="0,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
             <TabItem Header="Начальны данные">
-                <DataGrid x:Name="dataGrid" Margin="0,0,0,0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{x:Null}" ClipboardContentBinding="{x:Null}" Header="Колонка1"/>
-                        <DataGridTemplateColumn ClipboardContentBinding="{x:Null}" Header="значение"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+                <TextBox x:Name="textBox" Height="20" TextWrapping="Wrap" Text="TextBox" Margin="56,0,368.667,0" RenderTransformOrigin="0.446,-2.717"/>
             </TabItem>
             <TabItem Header="точки попадания">
-
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="242*"/>
@@ -42,7 +36,8 @@
                     <Button x:Name="button" Grid.Row="1" Content="Button" Height="30" Click="button_Click" Margin="87,9,60.667,9"/>
                 </Grid>
             </TabItem>
-            
+
+
 
         </TabControl>
         <ProgressBar x:Name="pb" Grid.Row="1" Margin="0,0,0,0" Value="{Binding Progress}" Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" ToolTip="Progress"/>

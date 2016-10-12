@@ -8,14 +8,14 @@ using System.Windows;
 using System.Xml.Serialization;
 
 namespace GameLoop {
-    public class Enviroment {
+    public class GLEnviroment {
         public List<IUnit> Units { get; private set; } = new List<IUnit>();
         public double Time { get; set; }
-        public double dT { get; set; } = 0.0001;
+        public double dT { get; set; } = 0.01;
         public Func<bool> StopFunc { get; set; }
         public double MaxTime { get; set; } = 100d;
 
-        public Enviroment() {
+        public GLEnviroment() {
             StopFunc += () => {
                 return Time >= MaxTime;
             };

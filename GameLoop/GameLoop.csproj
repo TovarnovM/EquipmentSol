@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="AimSurf.cs" />
     <Compile Include="Class1.cs" />
-    <Compile Include="Enviroment.cs" />
+    <Compile Include="GLEnviroment.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="MyRange.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
