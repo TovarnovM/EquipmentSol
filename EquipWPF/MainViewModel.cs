@@ -76,6 +76,7 @@ namespace EquipWPF {
             env.StopFunc += () => {
                 return we.Dead || enemy.Dead;
             };
+            env.dT = 0.0001;
 
             env.Start();
 
@@ -87,6 +88,9 @@ namespace EquipWPF {
         }
 
         public void DrawAim(PlotModel pm, Fighter f) {
+            pm.Title = $"Name = {f.Name} ;  HP = {f.HP} ;  Dead = {f.Dead}";
+
+
             pm.Series.Clear();
             var ss = new ScatterSeries() {
                 MarkerType = MarkerType.Star,
@@ -95,10 +99,11 @@ namespace EquipWPF {
                 MarkerStroke = OxyColors.Red,
                 MarkerStrokeThickness = 1,
                
+               
             };
             foreach(var point in f.Hits) {
                 var sp = new ScatterPoint(point.Item2.X,point.Item2.Y,value: point.Item1,tag: "t = " + point.Item1.ToString("G1"));
-         
+        
                 ss.Points.Add(sp);
             }
             pm.Series.Add(ss);
@@ -125,7 +130,7 @@ namespace EquipWPF {
                 StrokeThickness = 3,
                 Size = 7,
                 Text = $"({f.AimSurf.AimPoint})",
-                Layer = AnnotationLayer.BelowSeries
+                Layer = AnnotationLayer.AboveSeries
             };
 
             pm.Annotations.Add(ap);
