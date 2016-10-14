@@ -42,6 +42,7 @@ namespace GameLoop {
                 return;
             UnitTime = Owner.Time;
         }
+
         #endregion
         [XmlIgnore]
         protected MyRandom rnd;

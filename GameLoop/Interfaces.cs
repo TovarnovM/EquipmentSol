@@ -12,6 +12,7 @@ namespace GameLoop {
         IList<Rect> Boxes { get; }
         double getDamage(Vector hit);
         Vector AimPoint { get; set; }
+        IAimSurface CopyMe();
     }
     public interface IUnit {
         double UnitTime { get; set; }
@@ -29,8 +30,8 @@ namespace GameLoop {
         MyRange<double> TimeBetweenLines { get; set; }
         MyRange<double> ReloadTime { get; set; }
         Func<double,double> GetDamage { get; }
-        InterpXY Ex_line { get; set; }
-        InterpXY Ey_line { get; set; }
+        double Ex_line(double distance);
+        double Ey_line(double distance);
     }
 
     public interface IWithPos<T> {

@@ -19,10 +19,38 @@ namespace EquipWPF {
             Model1.PlotType = PlotType.Cartesian;
             Model2 = GetNewModel("Me");
             Model2.PlotType = PlotType.Cartesian;
+
+            Model3 = GetNewModel("Stats");
+            Model3.Series.Add(new LineSeries() {
+                Color = OxyColors.Green,
+                Title = "We won",
+                StrokeThickness = 3
+            });
+            Model3.Series.Add(new LineSeries() {
+                Color = OxyColors.Red,
+                Title = "Enemy won",
+                StrokeThickness = 3
+            });
+
+
+            Standing = new AimSurf();
+            Standing.AddBox(-0.15 * 0.5,1.9 - 0.280,0.15 * 0.5,1.9,0.9);
+
+            Standing.AddBox(-0.35 * 0.5,0.55 + 0.42,0.35 * 0.5,0.55 + 0.42 + 0.65,0.5);
+
+            Standing.AddBox(-0.35 * 0.5,0.55,-0.35 * 0.5 + 0.15,0.55 + 0.42,0.4);
+            Standing.AddBox(0.35 * 0.5 - 0.15,0.55,0.35 * 0.5,0.55 + 0.42,0.4);
+
+            Standing.AddBox(-0.35 * 0.5 + 0.02,0,-0.35 * 0.5 + 0.11 + 0.02,0.55,0.3);
+            Standing.AddBox(0.35 * 0.5 - 0.11 - 0.02,0,0.35 * 0.5  - 0.02,0.55,0.3);
+
+            Standing.AddBox(-0.35 * 0.5 - 0.11,0.55 + 0.42 + 0.65 - 0.75,-0.35 * 0.5,0.55 + 0.42 + 0.65,0.3);
+            Standing.AddBox(0.35 * 0.5,0.55 + 0.42 + 0.65 - 0.75,0.35 * 0.5 + 0.11,0.55 + 0.42 + 0.65,0.3);
+            Standing.AimPoint = new Vector(0,0.55 + 0.42 + 0.65 * 0.7);
         }
         public PlotModel Model1 { get; set; }
         public PlotModel Model2 { get; set; }
-        
+        public PlotModel Model3{ get; set; }
         public PlotModel GetNewModel(string title = "") {
             var m = new PlotModel { Title = title };
             var linearAxis1 = new LinearAxis();
@@ -41,36 +69,73 @@ namespace EquipWPF {
             return m;
         }
 
-        public void OneTest() {
-            
-            var we = new Fighter("We");
-            var surf = new AimSurf();
-            surf.AddBox(-0.1,0,0.1,1,0.1);
-            surf.AimPoint = new Vector(0,0.5);
-            we.AimSurf = surf;
-            we.Weapon = WeaponFactory.Get("AK74");
 
+        public double TimeToShootWe { get; set; } = 1d;
+        public double TimeToShootEnemy { get; set; } = 1.2d;
+        public double HPwe { get; set; } = 1;
+        public double HPenemy { get; set; } = 1;
+        public double Ex_we { get; set; } = 1d / 1000d;
+        public double Ey_we { get; set; } = 1d / 10000d;
+        public double Ex_enemy { get; set; } = 1d / 1000d;
+        public double Ey_enemy { get; set; } = 1d / 10000d;
+
+        public AimSurf Standing { get; set; }
+
+        private Fighter GetWe(double distance = 0d) 
+        {
+                var we = new Fighter("We");
+            we.AimSurf = Standing.CopyMe();
+            we.Weapon = WeaponFactory.Get("AK74");
+            we.TimeToNextLine = TimeToShootWe;
+            we.Pos = new Vector(distance,0);
+            we.HP = HPwe;
+            we.Ex = Ex_we;
+            we.Ey = Ey_we;
+            return we;
+
+        }
+        private Fighter GetEnemy(double distance = 200d) {
             var enemy = new Fighter("enemy");
-            surf = new AimSurf();
-            surf.AddBox(-0.2,0,0.2,1,1);
-            surf.AddBox(-0.1,0.2,0.1,0.5,0.1);
-            surf.AimPoint = new Vector(0,0.5);
-            enemy.AimSurf = surf;
+            enemy.AimSurf  = Standing.CopyMe();
             enemy.Weapon = WeaponFactory.Get("AK74");
+            enemy.TimeToNextLine = TimeToShootEnemy;
+            enemy.Pos = new Vector(distance,0);
+            enemy.HP = HPenemy;
+            enemy.Ex = Ex_enemy;
+            enemy.Ey = Ey_enemy;
+            return enemy;
+
+        }
+
+        public GLEnviroment GetOneTest(double distance) {
+            var we = GetWe();
+
+            var enemy = GetEnemy(distance);
 
             enemy.Target = we;
             we.Target = enemy;
 
-            enemy.TimeToNextLine = 3;
-            we.TimeToNextLine = 1;
 
-            we.Pos = new Vector(0,0);
-            enemy.Pos = new Vector(200,0);
+            var env = new GLEnviroment();
+            env.AddUnit(we);
+            env.AddUnit(enemy);
+            env.StopFunc += () => {
+                return we.Dead || enemy.Dead;
+            };
+            env.dT = 0.001;
+            return env;
+        }
 
-            we.HP = 100;
-            enemy.HP = 200;
+        public void OneSampleTest() {
 
+            var we = GetWe();
 
+            var enemy = GetEnemy(200);
+
+            enemy.Target = we;
+            we.Target = enemy;
+
+    
             var env = new GLEnviroment();
             env.AddUnit(we);
             env.AddUnit(enemy);
@@ -145,13 +210,104 @@ namespace EquipWPF {
 
         #region TAASKS
         public List<Task<GLEnviroment>> Tasks { get; set; } = new List<Task<GLEnviroment>>(1000);
+        public CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
 
-        
-        public void Start() {
-            
-            
+        public double DistanceMin { get; set; } = 10d;
+        public double DistanceMax { get; set; } = 500d;
+        public double DistanceShag { get; set; } = 10d;
+        public int NIter { get; set; } = 10000;
+
+        private object _lock = new object();
+
+        public void Start(bool hits = true) {
+            if(Tasks.Count > 0) {
+                CTS.Cancel();
+                lock(_lock) {
+                    Tasks.Clear();
+                }
+                
+            }
+
+            Progress = 0;
+            Minimum = 0;
+            Maximum = Math.Ceiling((DistanceMax - DistanceMin) / DistanceShag) * NIter;
+            Tasks.Capacity = (int)Maximum + 1;
+            CTS = new CancellationTokenSource();
+            var ct = CTS.Token;
+            var dist = DistanceMin;
+
+            Task.Factory.StartNew(() => {
+                bool lastLap = false;
+                var lmbda = new Func<object,GLEnviroment>((d) => {
+                    var env = GetOneTest((double)d);
+                    env.dT = 0.01;
+                    env.MaxTime = 60;
+                    env.Start();
+                    if(hits) {
+                        (env.Units[0] as Fighter).ClearStats();
+                        (env.Units[1] as Fighter).ClearStats();
+                    }
+
+                    return env;
+                });
+
+                while(dist <= DistanceMax || !lastLap) {
+                    lock(_lock) {
+                        for(int i = 0; i < NIter; i++) {
+                            var tsk = Task.Factory.StartNew<GLEnviroment>(lmbda, dist, ct);
+                            tsk.ContinueWith((a) => {
+                                Progress++;
+                            });
+                            Tasks.Add(tsk);
+                        }
+                    }
+
+                    //Tasks.Last().ContinueWith((env) => UpdateStats());
+
+                    dist += DistanceShag;
+                    if(dist == DistanceMax)
+                        continue;
+                    if(!lastLap && dist > DistanceMax) {
+                        lastLap = true;
+                        dist = DistanceMax;
+                    }
+                
+                }
+
+            }, ct);
+
+
+            var ss = 1;   
         }
+        public void UpdateStats() {
+            lock(_lock) {
 
+
+                var serWe = Model3.Series[0] as LineSeries;
+                var serEnemy = Model3.Series[1] as LineSeries;
+
+                serEnemy.Points.Clear();
+                serWe.Points.Clear();
+
+                var readydata = from tsk in Tasks
+                                where tsk.IsCompleted
+                                group tsk by (double)tsk.AsyncState into dists1
+                                select new {
+                                    Dist = dists1.Key,
+                                    Battles = dists1.ToList()
+                                };
+                var dists = readydata.ToList();
+            
+            foreach(var dist in dists) {
+                var perWeWon = (double)dist.Battles.Where((t) => (t.Result.Units.First((u) => u.Name == "We") as Fighter).HP>0 ).Count() / dist.Battles.Count();
+                serWe.Points.Add(new DataPoint(dist.Dist,perWeWon));
+                serEnemy.Points.Add(new DataPoint(dist.Dist,1-perWeWon));
+            }}
+            Model3.InvalidatePlot(true);
+            
+
+
+        }
 
 
         #endregion

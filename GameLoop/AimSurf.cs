@@ -55,6 +55,9 @@ namespace GameLoop {
             }
             return 0;
         }
+        public Rect CopyMe() {
+            return new Rect(xmin,ymin,xmax,ymax,damage);
+        }
     }
     [Serializable]
     public class AimSurf : IAimSurface {
@@ -67,6 +70,7 @@ namespace GameLoop {
         public AimSurf() {
             //
         }
+        
         public void AddBox(double xmin,double ymin,double xmax,double ymax,double damage) {
             Boxes.Add(new Rect(xmin,ymin,xmax,ymax,damage));
         }
@@ -102,6 +106,15 @@ namespace GameLoop {
         public void writeInCSV(String filename) {
             //???
 
+        }
+
+        public IAimSurface CopyMe() {
+            var res = new AimSurf();
+            res.AimPoint = AimPoint;
+            foreach(var box in Boxes) {
+                res.Boxes.Add(box.CopyMe());
+            }
+            return res;
         }
     }
 }

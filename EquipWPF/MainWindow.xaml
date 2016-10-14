@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:EquipWPF"
         xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="505.721" Width="729.661">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
@@ -16,9 +16,67 @@
             <RowDefinition Height="17*"/>
         </Grid.RowDefinitions>
         <TabControl x:Name="tabControl" Grid.Row="0" Margin="0,0,0,0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
-            <TabItem Header="Начальны данные">
-                <TextBox x:Name="textBox" Height="20" TextWrapping="Wrap" Text="TextBox" Margin="56,0,368.667,0" RenderTransformOrigin="0.446,-2.717"/>
+            <TabItem Header="Исходные данные стрелка,оснащенного ПИС">
+                <Grid Background="#FFE5E5E5" Margin="0,-1,0,-5">
+                    <TextBlock x:Name="string1" HorizontalAlignment="Left" Margin="10,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Время до открытия огня стрелком, с               "/><Run Text=""/><Run Text="                      от "/></TextBlock>
+                    <TextBox x:Name="low1" HorizontalAlignment="Left" Height="23" Margin="369,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="substring1" HorizontalAlignment="Left" Margin="447,17,0,0" TextWrapping="Wrap" Text="до" VerticalAlignment="Top" RenderTransformOrigin="-0.799,0"/>
+                    <TextBox x:Name="top1" HorizontalAlignment="Left" Height="23" Margin="477,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.836,0.5"/>
+                    <TextBox x:Name="betweenQeues1" HorizontalAlignment="Left" Height="23" Margin="369,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string3" HorizontalAlignment="Left" Margin="10,59,0,0" TextWrapping="Wrap" Text="Время между очередями, c" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="string4" HorizontalAlignment="Left" Margin="10,102,0,0" TextWrapping="Wrap" Text="Условное количество жизни, у.е" VerticalAlignment="Top"/>
+                    <TextBox x:Name="HP1" HorizontalAlignment="Left" Height="23" Margin="369,95,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string5" HorizontalAlignment="Left" Margin="10,147,0,0" TextWrapping="Wrap" Text="Время перезарядки, с" VerticalAlignment="Top"/>
+                    <TextBox x:Name="reload1" HorizontalAlignment="Left" Height="23" Margin="369,140,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string6" HorizontalAlignment="Left" Margin="10,190,0,0" TextWrapping="Wrap" Text="Ex, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="Ex1" HorizontalAlignment="Left" Height="23" Margin="369,183,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string7" HorizontalAlignment="Left" Margin="10,230,0,0" TextWrapping="Wrap" Text="Ey, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="Ey1" HorizontalAlignment="Left" Height="23" Margin="369,223,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string8" HorizontalAlignment="Left" Margin="10,272,0,0" TextWrapping="Wrap" Text="Отклонение от точки прицеливания, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="deviation1" HorizontalAlignment="Left" Height="23" Margin="369,262,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string9" HorizontalAlignment="Left" Margin="10,310,0,0" TextWrapping="Wrap" Text="Дистанция стрельбы, м" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="substring9" HorizontalAlignment="Left" Margin="256,310,0,0" TextWrapping="Wrap" Text="Минимальная" VerticalAlignment="Top"/>
+                    <TextBox x:Name="mindist1" HorizontalAlignment="Left" Height="23" Margin="369,307,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="substring91" HorizontalAlignment="Left" Margin="491,310,0,0" TextWrapping="Wrap" Text="Максимальная" VerticalAlignment="Top"/>
+                    <TextBox x:Name="maxdist1" HorizontalAlignment="Left" Height="23" Margin="618,307,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string10" HorizontalAlignment="Left" Margin="10,351,0,0" TextWrapping="Wrap" Text="Количество итераций на каждой дистанции, шт" VerticalAlignment="Top"/>
+                    <TextBox x:Name="stepcount1" HorizontalAlignment="Left" Height="23" Margin="370,348,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="63"/>
+                    <TextBlock x:Name="string11" HorizontalAlignment="Left" Margin="12,391,0,0" TextWrapping="Wrap" Text="Шаг изминения дистанции, м" VerticalAlignment="Top"/>
+                    <TextBox x:Name="deltadist1" HorizontalAlignment="Left" Height="23" Margin="370,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="63"/>
+
+                </Grid>
             </TabItem>
+
+            <TabItem Header="Исходные данные стрелка, не оснащенного ПИС">
+                <Grid Background="#FFE5E5E5" Margin="0,-1,0,-5">
+                    <TextBlock x:Name="string21" HorizontalAlignment="Left" Margin="10,17,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Время до открытия огня стрелком, с               "/><Run Text=""/><Run Text="                      от "/></TextBlock>
+                    <TextBox x:Name="low2" HorizontalAlignment="Left" Height="23" Margin="369,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="substring21" HorizontalAlignment="Left" Margin="447,17,0,0" TextWrapping="Wrap" Text="до" VerticalAlignment="Top" RenderTransformOrigin="-0.799,0"/>
+                    <TextBox x:Name="top2" HorizontalAlignment="Left" Height="23" Margin="477,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64" RenderTransformOrigin="0.836,0.5"/>
+                    <TextBox x:Name="betweenQeues2" HorizontalAlignment="Left" Height="23" Margin="369,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string23" HorizontalAlignment="Left" Margin="10,59,0,0" TextWrapping="Wrap" Text="Время между очередями, c" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="string24" HorizontalAlignment="Left" Margin="10,102,0,0" TextWrapping="Wrap" Text="Условное количество жизни, у.е" VerticalAlignment="Top"/>
+                    <TextBox x:Name="HP2" HorizontalAlignment="Left" Height="23" Margin="369,95,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string25" HorizontalAlignment="Left" Margin="10,147,0,0" TextWrapping="Wrap" Text="Время перезарядки, с" VerticalAlignment="Top"/>
+                    <TextBox x:Name="reload2" HorizontalAlignment="Left" Height="23" Margin="369,140,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string26" HorizontalAlignment="Left" Margin="10,190,0,0" TextWrapping="Wrap" Text="Ex, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="Ex2" HorizontalAlignment="Left" Height="23" Margin="369,183,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string27" HorizontalAlignment="Left" Margin="10,230,0,0" TextWrapping="Wrap" Text="Ey, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="Ey2" HorizontalAlignment="Left" Height="23" Margin="369,223,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string28" HorizontalAlignment="Left" Margin="10,272,0,0" TextWrapping="Wrap" Text="Отклонение от точки прицеливания, см" VerticalAlignment="Top" RenderTransformOrigin="0.528,1.167"/>
+                    <TextBox x:Name="deviation2" HorizontalAlignment="Left" Height="23" Margin="369,262,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string29" HorizontalAlignment="Left" Margin="10,310,0,0" TextWrapping="Wrap" Text="Дистанция стрельбы, м" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="substring29" HorizontalAlignment="Left" Margin="256,310,0,0" TextWrapping="Wrap" Text="Минимальная" VerticalAlignment="Top"/>
+                    <TextBox x:Name="mindist2" HorizontalAlignment="Left" Height="23" Margin="369,307,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="substring291" HorizontalAlignment="Left" Margin="491,310,0,0" TextWrapping="Wrap" Text="Максимальная" VerticalAlignment="Top"/>
+                    <TextBox x:Name="maxdist2" HorizontalAlignment="Left" Height="23" Margin="618,307,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="64"/>
+                    <TextBlock x:Name="string210" HorizontalAlignment="Left" Margin="10,351,0,0" TextWrapping="Wrap" Text="Количество итераций на каждой дистанции, шт" VerticalAlignment="Top"/>
+                    <TextBox x:Name="stepcount2" HorizontalAlignment="Left" Height="23" Margin="370,348,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="63"/>
+                    <TextBlock x:Name="string211" HorizontalAlignment="Left" Margin="12,391,0,0" TextWrapping="Wrap" Text="Шаг изминения дистанции, м" VerticalAlignment="Top"/>
+                    <TextBox x:Name="deltadist2" HorizontalAlignment="Left" Height="23" Margin="370,391,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="63"/>
+                </Grid>
+            </TabItem>
+
             <TabItem Header="точки попадания">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -33,9 +91,18 @@
                         <oxy:PlotView Grid.Column="0" Model="{Binding Model1}" Margin="10,10,9.667,9.667"/>
                         <oxy:PlotView Grid.Column="1" Model="{Binding Model2}" Margin="10.333,10,9.667,9.667"/>
                     </Grid>
-                    <Button x:Name="button" Grid.Row="1" Content="Button" Height="30" Click="button_Click" Margin="87,9,60.667,9"/>
+                    <Button x:Name="button" Grid.Row="1" Content="Button" Height="30" Click="button_Click" Margin="87,9,341,9"/>
                 </Grid>
             </TabItem>
+            <TabItem Header="Stats">
+                <Grid Margin="0,0,0,0">
+                    <oxy:PlotView Grid.Column="0" Model="{Binding Model3}" Margin="0,0,0,30"/>
+                    <Button x:Name="button3" Content="GO!" Height="28" Margin="10,0,0,2" VerticalAlignment="Bottom" Click="button3_Click" HorizontalAlignment="Left" Width="99"/>
+                    <Button x:Name="button3_Copy" Content="Stats!" Margin="121,0,0,2" HorizontalAlignment="Left" Width="99" Click="button3_Copy_Click" Height="28" VerticalAlignment="Bottom"/>
+
+                </Grid>
+            </TabItem>
+
 
 
 

@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 namespace GameLoop {
     public class GLEnviroment {
         public List<IUnit> Units { get; private set; } = new List<IUnit>();
+        public Dictionary<string,object> Stats { get; set; } = new Dictionary<string,object>();
         public double Time { get; set; }
         public double dT { get; set; } = 0.01;
         public Func<bool> StopFunc { get; set; }

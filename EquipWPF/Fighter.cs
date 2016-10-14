@@ -12,6 +12,7 @@ namespace EquipWPF {
     [Serializable]
     public class Fighter : UnitWithHP, ISurfaceUnit {
         //E = Ex*dist(m) [m]
+
         public double Ex { get; set; }
         public double Ey { get; set; }
         public IAimSurface AimSurf { get; set; }
@@ -57,8 +58,8 @@ namespace EquipWPF {
 
             for(int i = 0; i < hitsInLine; i++) {
                 var hit = stp + new Vector(
-                    rnd.GetNorm(0,Weapon.Ex_line[dist] / 0.674),
-                    rnd.GetNorm(0,Weapon.Ey_line[dist] / 0.674));
+                    rnd.GetNorm(0,Weapon.Ex_line(dist) / 0.674),
+                    rnd.GetNorm(0,Weapon.Ey_line(dist) / 0.674));
                 Target.HitMe(this,Weapon,hit);
             }
             Weapon.RoundInMagaz -= hitsInLine;
@@ -82,5 +83,47 @@ namespace EquipWPF {
 
         public Fighter(string name):base(name) {
         }
+
+        public Fighter CopyMe(bool onlyInvariants = true) {
+            var res = new Fighter(Name);
+            res.Ex = Ex;
+            res.Ey = Ey;
+            res.AimSurf = AimSurf.CopyMe();
+            res.WeaponName = WeaponName;
+
+            res.Pos = Pos;
+
+            res.HP = HP;
+            res.Dead = Dead;
+
+
+            if(!onlyInvariants) {
+                res.Owner = Owner;
+                res.UnitTime = UnitTime;
+                res.Enabled = Enabled;
+
+                foreach(var hitter in Hitters) {
+                    res.Hitters.Add(hitter.Key,new List<Tuple<double,double>>(hitter.Value));
+                }
+
+
+                foreach(var hit in Hits) {
+                    res.Hits.Add(new Tuple<double,Vector>(hit.Item1,hit.Item2));
+                }
+                res.Target = Target;
+                res.TimeToNextLine = TimeToNextLine;
+
+
+            }
+            return res;
+
+        }
+        public void ClearStats() {
+            Hits.Clear();
+            Hitters.Clear();
+        }
+
+       
     }
+
 }
