@@ -10,6 +10,7 @@ using GameLoop;
 using OxyPlot.Series;
 using System.Windows;
 using OxyPlot.Annotations;
+using System.Threading;
 
 namespace EquipWPF {
     public class MainViewModel: INotifyPropertyChanged {
@@ -76,7 +77,7 @@ namespace EquipWPF {
             env.StopFunc += () => {
                 return we.Dead || enemy.Dead;
             };
-            env.dT = 0.0001;
+            env.dT = 0.001;
 
             env.Start();
 
@@ -141,6 +142,19 @@ namespace EquipWPF {
 
 
         }
+
+        #region TAASKS
+        public List<Task<GLEnviroment>> Tasks { get; set; } = new List<Task<GLEnviroment>>(1000);
+
+        
+        public void Start() {
+            
+            
+        }
+
+
+
+        #endregion
 
         #region ProgressBar
         private double _min = 0;

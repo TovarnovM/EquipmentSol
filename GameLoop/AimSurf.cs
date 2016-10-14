@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Globalization;
+using System.Xml.Serialization;
 
 namespace GameLoop {
     [Serializable]
-    public struct Rect {
+    public class Rect {
         public double xmin, ymin, xmax, ymax, damage;
+        [XmlIgnore]
         public double Width {
             get {
                 return xmax - xmin;
@@ -22,6 +24,7 @@ namespace GameLoop {
                     xmin = xmax + value;
             }
         }
+        [XmlIgnore]
         public double Height {
             get {
                 return ymax - ymin;
@@ -33,6 +36,7 @@ namespace GameLoop {
                     ymin = ymax + value;
             }
         }
+        public Rect() : this(0,0,1,1,0) { }
         public Rect(double xmin,double ymin,double xmax,double ymax,double damage) {
             this.xmin = Math.Min(xmin,xmax);
             this.ymin = Math.Min(ymin,ymax);
