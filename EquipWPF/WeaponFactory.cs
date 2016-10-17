@@ -20,11 +20,11 @@ namespace EquipWPF {
         public string Name { get; set; }
 
         double IWeapon.Ex_line(double distance) {
-            return Ex_line * distance / 100;
+            return Ex_line * distance;
         }
 
         double IWeapon.Ey_line(double distance) {
-            return Ex_line * distance / 100;
+            return Ex_line * distance;
         }
     }
 
@@ -47,7 +47,7 @@ namespace EquipWPF {
                 Ex_line = 8E-2,
                 Ey_line = 6E-2,
                 GetDamage = (dist) => {
-                    return dist < 1500 ? 1 : (dist < 3000 ? 0.5 : 0);
+                    return dist <= 1500 ? 1 : (dist < 3000 ? 0.5 : 0);
                 }
             };
             //ak.Ex_line.Add(0,0);

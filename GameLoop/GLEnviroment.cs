@@ -13,12 +13,14 @@ namespace GameLoop {
         public Dictionary<string,object> Stats { get; set; } = new Dictionary<string,object>();
         public double Time { get; set; }
         public double dT { get; set; } = 0.01;
-        public Func<bool> StopFunc { get; set; }
+        public Func<int> StopFunc { get; set; }
+        public static int TIME_LIMIT_RESULT = 77;
         public double MaxTime { get; set; } = 100d;
+        public int Result { get; set; } = 0;
 
         public GLEnviroment() {
             StopFunc += () => {
-                return Time >= MaxTime;
+                return Time >= MaxTime ? TIME_LIMIT_RESULT : 0;
             };
         }
         public void AddUnit(IUnit unit) {
@@ -40,8 +42,11 @@ namespace GameLoop {
             Time = 0d;
             while(true) {
                 UpdateAllUnits();
-                if(StopFunc())
+                if(StopFunc() > 0) {
+                    Result = StopFunc();
                     break;
+                }
+                    
                 Time += dT;
             }
         }

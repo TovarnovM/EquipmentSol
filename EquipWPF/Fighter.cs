@@ -13,10 +13,12 @@ namespace EquipWPF {
     public class Fighter : UnitWithHP, ISurfaceUnit {
         //E = Ex*dist(m) [m]
 
-        public double Ex { get; set; }
-        public double Ey { get; set; }
+        public double Bx { get; set; }
+        public double By { get; set; }
         public IAimSurface AimSurf { get; set; }
         public List<Tuple<double,Vector>> Hits { get; set; } = new List<Tuple<double,Vector>>();
+        public int Omega { get; set; } = 0;
+
         [XmlIgnore]
         public IWeapon Weapon { get; set; }
         private string weaponName;
@@ -53,8 +55,8 @@ namespace EquipWPF {
             var dist = posU != null ? posU.GetDistanceTo(Pos) : 10d;
 
             var stp = new Vector(
-                rnd.GetNorm(Target.AimSurf.AimPoint.X,Ex * dist / 0.674),
-                rnd.GetNorm(Target.AimSurf.AimPoint.Y,Ey * dist / 0.674));
+                rnd.GetNorm(Target.AimSurf.AimPoint.X,Bx * dist / 0.674),
+                rnd.GetNorm(Target.AimSurf.AimPoint.Y,By * dist / 0.674));
 
             for(int i = 0; i < hitsInLine; i++) {
                 var hit = stp + new Vector(
@@ -63,7 +65,7 @@ namespace EquipWPF {
                 Target.HitMe(this,Weapon,hit);
             }
             Weapon.RoundInMagaz -= hitsInLine;
-
+            Omega += hitsInLine;
             TimeToNextLine = rnd.GetDouble(Weapon.TimeBetweenLines.Min,Weapon.TimeBetweenLines.Min);
 
         }
@@ -86,8 +88,8 @@ namespace EquipWPF {
 
         public Fighter CopyMe(bool onlyInvariants = true) {
             var res = new Fighter(Name);
-            res.Ex = Ex;
-            res.Ey = Ey;
+            res.Bx = Bx;
+            res.By = By;
             res.AimSurf = AimSurf.CopyMe();
             res.WeaponName = WeaponName;
 

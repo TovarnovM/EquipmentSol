@@ -23,15 +23,29 @@ namespace EquipWPF {
             Model3 = GetNewModel("Stats");
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.Green,
-                Title = "We won",
+                Title = "We won, %",
                 StrokeThickness = 3
             });
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.Red,
-                Title = "Enemy won",
+                Title = "Enemy won, %",
                 StrokeThickness = 3
             });
-
+            Model3.Series.Add(new LineSeries() {
+                Color = OxyColors.Bisque,
+                Title = "TimeAver, s",
+                StrokeThickness = 3
+            });
+            Model3.Series.Add(new LineSeries() {
+                Color = OxyColors.DarkSeaGreen,
+                Title = "OmegaAver we",
+                StrokeThickness = 3
+            });
+            Model3.Series.Add(new LineSeries() {
+                Color = OxyColors.MediumVioletRed,
+                Title = "OmegaAver enemy",
+                StrokeThickness = 3
+            });
 
             Standing = new AimSurf();
             Standing.AddBox(-0.15 * 0.5,1.9 - 0.280,0.15 * 0.5,1.9,0.9);
@@ -70,10 +84,17 @@ namespace EquipWPF {
         }
 
 
-        public double TimeToShootWe { get; set; } = 1d;
-        public double TimeToShootEnemy { get; set; } = 1.2d;
+        public double TimeToShootWe0 { get; set; } = 1d;
+        public double TimeToShootEnemy0 { get; set; } = 1.2d;
+        public double TimeToShootWe1 { get; set; } = 1d;
+        public double TimeToShootEnemy1 { get; set; } = 1.2d;
         public double HPwe { get; set; } = 1;
         public double HPenemy { get; set; } = 1;
+        public double Bx_we { get; set; } = 1d / 1000d;
+        public double By_we { get; set; } = 1d / 10000d;
+        public double Bx_enemy { get; set; } = 1d / 1000d;
+        public double By_enemy { get; set; } = 1d / 10000d;
+
         public double Ex_we { get; set; } = 1d / 1000d;
         public double Ey_we { get; set; } = 1d / 10000d;
         public double Ex_enemy { get; set; } = 1d / 1000d;
@@ -85,32 +106,43 @@ namespace EquipWPF {
         {
                 var we = new Fighter("We");
             we.AimSurf = Standing.CopyMe();
-            we.Weapon = WeaponFactory.Get("AK74");
-            we.TimeToNextLine = TimeToShootWe;
+            WeaponBase weap = WeaponFactory.Get("AK74") as WeaponBase;
+            weap.Ex_line = Ex_we;
+            weap.Ey_line = Ey_we;
+            we.Weapon = weap;
+            //we.TimeToNextLine = TimeToShootWe0;
             we.Pos = new Vector(distance,0);
             we.HP = HPwe;
-            we.Ex = Ex_we;
-            we.Ey = Ey_we;
+            we.Bx = Bx_we;
+            we.By = By_we;
             return we;
 
         }
         private Fighter GetEnemy(double distance = 200d) {
             var enemy = new Fighter("enemy");
             enemy.AimSurf  = Standing.CopyMe();
-            enemy.Weapon = WeaponFactory.Get("AK74");
-            enemy.TimeToNextLine = TimeToShootEnemy;
+            WeaponBase weap = WeaponFactory.Get("AK74") as WeaponBase;
+            weap.Ex_line = Ex_enemy;
+            weap.Ey_line = Ey_enemy;
+            enemy.Weapon = weap;
+            //enemy.TimeToNextLine = TimeToShootEnemy0;
             enemy.Pos = new Vector(distance,0);
             enemy.HP = HPenemy;
-            enemy.Ex = Ex_enemy;
-            enemy.Ey = Ey_enemy;
+            enemy.Bx = Bx_enemy;
+            enemy.By = By_enemy;
             return enemy;
 
         }
 
         public GLEnviroment GetOneTest(double distance) {
+     
             var we = GetWe();
 
             var enemy = GetEnemy(distance);
+
+
+            we.TimeToNextLine = Rnd.GetDouble(TimeToShootWe0,TimeToShootWe1);
+            enemy.TimeToNextLine = Rnd.GetDouble(TimeToShootEnemy0,TimeToShootEnemy1);
 
             enemy.Target = we;
             we.Target = enemy;
@@ -120,7 +152,9 @@ namespace EquipWPF {
             env.AddUnit(we);
             env.AddUnit(enemy);
             env.StopFunc += () => {
-                return we.Dead || enemy.Dead;
+                return !we.Dead && !enemy.Dead ? 0:
+                we.Dead ? 1:
+                enemy.Dead ? 2 : 3;
             };
             env.dT = 0.001;
             return env;
@@ -130,7 +164,7 @@ namespace EquipWPF {
 
             var we = GetWe();
 
-            var enemy = GetEnemy(200);
+            var enemy = GetEnemy((DistanceMax + DistanceMin) *0.5);
 
             enemy.Target = we;
             we.Target = enemy;
@@ -140,7 +174,9 @@ namespace EquipWPF {
             env.AddUnit(we);
             env.AddUnit(enemy);
             env.StopFunc += () => {
-                return we.Dead || enemy.Dead;
+                return !we.Dead && !enemy.Dead ? 0 :
+                we.Dead ? 1 :
+                enemy.Dead ? 2 : 3;
             };
             env.dT = 0.001;
 
@@ -209,9 +245,34 @@ namespace EquipWPF {
         }
 
         #region TAASKS
-        public List<Task<GLEnviroment>> Tasks { get; set; } = new List<Task<GLEnviroment>>(1000);
+        public class Resulter {
+            public double Distance { get; set; }
+            public double TimeAver { get; set; }
+            public double TimeAver_we_won { get; set; }
+            public double TimeAver_enemy_won { get; set; }
+            public sdata We { get; set; }
+            public sdata Enemy { get; set; }
+            public double WeWonPerc { get; set; }
+            public double EnemyWonPerc { get; set; }
+            public double DrawPer { get; set; }
+            //public double Ex_we_sum { get; set; }
+            //public double Ey_we_sum { get; set; }
+            //public double E_we_sum { get; set; }
+            //public double Ey_enemy_sum { get; set; }
+            //public double Ex_enemy_sum { get; set; }
+            //public double E_enemy_sum { get; set; }
+            public double Omega_we { get; set; }
+            public double Omega_we_won { get; set; }
+            public double Omega_we_loose { get; set; }
+            public double Omega_enemy { get; set; }
+            public double Omega_enemy_won { get; set; }
+            public double Omega_enemy_loose { get; set; }
+
+        }
+        public List<Resulter> Tasks { get; set; } = new List<Resulter>(100);
         public CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
 
+        public MyRandomGenerator.MyRandom Rnd { get; set; } = new MyRandomGenerator.MyRandom();
         public double DistanceMin { get; set; } = 10d;
         public double DistanceMax { get; set; } = 500d;
         public double DistanceShag { get; set; } = 10d;
@@ -237,7 +298,10 @@ namespace EquipWPF {
             var dist = DistanceMin;
 
             Task.Factory.StartNew(() => {
+
                 bool lastLap = false;
+
+
                 var lmbda = new Func<object,GLEnviroment>((d) => {
                     var env = GetOneTest((double)d);
                     env.dT = 0.01;
@@ -252,15 +316,57 @@ namespace EquipWPF {
                 });
 
                 while(dist <= DistanceMax || !lastLap) {
-                    lock(_lock) {
-                        for(int i = 0; i < NIter; i++) {
-                            var tsk = Task.Factory.StartNew<GLEnviroment>(lmbda, dist, ct);
-                            tsk.ContinueWith((a) => {
+                    var tsk = Task.Factory.StartNew<Resulter>(
+                        (st) => {
+                            var res = new Resulter();
+                            res.Distance = (double)st;
+                            var lstenv = new List<GLEnviroment>(NIter + 1);
+                            for(int i = 0; i < NIter; i++) {
+                                var env = GetOneTest(res.Distance);
+                                env.dT = 0.01;
+                                env.MaxTime = 180;
+                                env.Start();
                                 Progress++;
-                            });
-                            Tasks.Add(tsk);
-                        }
-                    }
+                                lstenv.Add(env);
+                            }
+                            var wewon = (from e in lstenv
+                                         where e.Result == 1
+                                         select e).ToList();
+                            var enemywon = (from e in lstenv
+                                            where e.Result == 2
+                                            select e).ToList();
+                            var draw = lstenv.Except(wewon).Except(enemywon).ToList();
+                            res.WeWonPerc = (double)wewon.Count / lstenv.Count;
+                            res.EnemyWonPerc = (double)enemywon.Count / lstenv.Count;
+                            res.DrawPer = (double)draw.Count / lstenv.Count;
+                            res.Omega_we = lstenv.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count);
+                            res.Omega_we_won = wewon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count);
+                            res.Omega_we_loose = enemywon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count);
+                            res.Omega_enemy = lstenv.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count);
+                            res.Omega_enemy_won = enemywon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count);
+                            res.Omega_enemy_loose = wewon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count);
+                            res.TimeAver = lstenv.Aggregate(0d, (s,next)=>s+=next.Time, (s) => s/ lstenv.Count);
+                            res.TimeAver_we_won = wewon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / wewon.Count);
+                            res.TimeAver_enemy_won = enemywon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / enemywon.Count);
+                            res.We = _we;
+                            res.Enemy = _enemy;
+                            return res;
+                        },dist,ct);
+
+
+
+
+                    
+
+                        tsk.ContinueWith((a) => {
+                            lock(_lock) {
+                                Tasks.Add(a.Result);
+                            }
+                            UpdateStats();
+                        });
+                        
+                        
+                    
 
                     //Tasks.Last().ContinueWith((env) => UpdateStats());
 
@@ -280,33 +386,65 @@ namespace EquipWPF {
             var ss = 1;   
         }
         public void UpdateStats() {
+
+            var serWe = Model3.Series[0] as LineSeries;
+            var serEnemy = Model3.Series[1] as LineSeries;
+            var serT = Model3.Series[2] as LineSeries;
+            var serOmegaWe = Model3.Series[3] as LineSeries;
+            var serOmegaEnemy = Model3.Series[4] as LineSeries;
+  
+
+            serEnemy.Points.Clear();
+            serWe.Points.Clear();
+            serT.Points.Clear();
+            serOmegaWe.Points.Clear();
+            serOmegaEnemy.Points.Clear();
+
+            List<Resulter> lstr;
             lock(_lock) {
-
-
-                var serWe = Model3.Series[0] as LineSeries;
-                var serEnemy = Model3.Series[1] as LineSeries;
-
-                serEnemy.Points.Clear();
-                serWe.Points.Clear();
-
-                var readydata = from tsk in Tasks
-                                where tsk.IsCompleted
-                                group tsk by (double)tsk.AsyncState into dists1
-                                select new {
-                                    Dist = dists1.Key,
-                                    Battles = dists1.ToList()
-                                };
-                var dists = readydata.ToList();
-            
-            foreach(var dist in dists) {
-                var perWeWon = (double)dist.Battles.Where((t) => (t.Result.Units.First((u) => u.Name == "We") as Fighter).HP>0 ).Count() / dist.Battles.Count();
-                serWe.Points.Add(new DataPoint(dist.Dist,perWeWon));
-                serEnemy.Points.Add(new DataPoint(dist.Dist,1-perWeWon));
-            }}
+                lstr = Tasks.OrderBy((r) => r.Distance).ToList();
+            }
+            foreach(var res in lstr) {
+                serWe.Points.Add(new DataPoint(res.Distance,res.WeWonPerc * 100));
+                serEnemy.Points.Add(new DataPoint(res.Distance,res.EnemyWonPerc * 100));
+                serT.Points.Add(new DataPoint(res.Distance,res.TimeAver));
+                serOmegaWe.Points.Add(new DataPoint(res.Distance,res.Omega_we));
+                serOmegaEnemy.Points.Add(new DataPoint(res.Distance,res.Omega_enemy));
+            }
             Model3.InvalidatePlot(true);
             
 
 
+        }
+
+
+        #endregion
+
+        #region TAAASKS 2!!!!
+        sdata _we, _enemy;
+        public void LoadData(sdata we,sdata enemy) {
+            _we = we;
+            _enemy = enemy;
+            TimeToShootWe0 = we.lowborder;
+            TimeToShootEnemy0 = enemy.lowborder;
+            TimeToShootWe1 = we.topborder;
+            TimeToShootEnemy1 = enemy.topborder;
+            HPwe = we.HP;
+            HPenemy = enemy.HP;
+            Bx_we = we.Bx/10000;
+            By_we = we.By / 10000;
+            Bx_enemy = enemy.Bx / 10000;
+            By_enemy = enemy.By / 10000;
+
+            Ex_we = we.Ex / 10000;
+            Ey_we = we.Ey / 10000;
+            Ex_enemy = enemy.Ex / 10000;
+            Ey_enemy = enemy.Ey / 10000;
+
+            DistanceMin = enemy.mindist;
+            DistanceMax = enemy.maxdist;
+            DistanceShag = enemy.deltadist;
+            NIter = (int)enemy.stepcount;
         }
 
 
