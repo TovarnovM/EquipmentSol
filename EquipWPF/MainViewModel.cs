@@ -291,7 +291,7 @@ namespace EquipWPF {
 
             Progress = 0;
             Minimum = 0;
-            Maximum = Math.Ceiling((DistanceMax - DistanceMin) / DistanceShag) * NIter;
+            Maximum = Math.Ceiling((DistanceMax - DistanceMin) / DistanceShag) * (NIter+9);
             Tasks.Capacity = (int)Maximum + 1;
             CTS = new CancellationTokenSource();
             var ct = CTS.Token;
@@ -336,18 +336,38 @@ namespace EquipWPF {
                                             where e.Result == 2
                                             select e).ToList();
                             var draw = lstenv.Except(wewon).Except(enemywon).ToList();
+
+                            var Omega_we_t = Task.Factory.StartNew<double>(_ => lstenv.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count),ct);
+                            Omega_we_t.ContinueWith((t) => Progress++);
+                            var Omega_we_won_t = Task.Factory.StartNew<double>(_ => wewon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count),ct);
+                            Omega_we_won_t.ContinueWith((t) => Progress++);
+                            var Omega_we_loose_t = Task.Factory.StartNew<double>(_ => enemywon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count),ct);
+                            Omega_we_loose_t.ContinueWith((t) => Progress++);
+                            var Omega_enemy_t = Task.Factory.StartNew<double>(_ => lstenv.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count),ct);
+                            Omega_enemy_t.ContinueWith((t) => Progress++);
+                            var Omega_enemy_won_t = Task.Factory.StartNew<double>(_ => enemywon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count),ct);
+                            Omega_enemy_won_t.ContinueWith((t) => Progress++);
+                            var Omega_enemy_loose_t = Task.Factory.StartNew<double>(_ => wewon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count),ct);
+                            Omega_enemy_loose_t.ContinueWith((t) => Progress++);
+                            var TimeAver_t = Task.Factory.StartNew<double>(_ => lstenv.Aggregate(0d, (s,next)=>s+=next.Time, (s) => s/ lstenv.Count),ct);
+                            TimeAver_t.ContinueWith((t) => Progress++);
+                            var TimeAver_we_won_t = Task.Factory.StartNew<double>(_ => wewon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / wewon.Count),ct);
+                            TimeAver_we_won_t.ContinueWith((t) => Progress++);
+                            var TimeAver_enemy_won_t = Task.Factory.StartNew<double>(_ => enemywon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / enemywon.Count),ct);
+                            TimeAver_enemy_won_t.ContinueWith((t) => Progress++);
+                            Task.WaitAll(Omega_we_t,Omega_we_won_t,Omega_we_loose_t,Omega_enemy_t,Omega_enemy_won_t,Omega_enemy_loose_t,TimeAver_t,TimeAver_we_won_t,TimeAver_enemy_won_t);
                             res.WeWonPerc = (double)wewon.Count / lstenv.Count;
                             res.EnemyWonPerc = (double)enemywon.Count / lstenv.Count;
                             res.DrawPer = (double)draw.Count / lstenv.Count;
-                            res.Omega_we = lstenv.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count);
-                            res.Omega_we_won = wewon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count);
-                            res.Omega_we_loose = enemywon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count);
-                            res.Omega_enemy = lstenv.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count);
-                            res.Omega_enemy_won = enemywon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count);
-                            res.Omega_enemy_loose = wewon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count);
-                            res.TimeAver = lstenv.Aggregate(0d, (s,next)=>s+=next.Time, (s) => s/ lstenv.Count);
-                            res.TimeAver_we_won = wewon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / wewon.Count);
-                            res.TimeAver_enemy_won = enemywon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / enemywon.Count);
+                            res.Omega_we = Omega_we_t.Result;
+                            res.Omega_we_won = Omega_we_won_t.Result;
+                            res.Omega_we_loose = Omega_we_loose_t.Result;
+                            res.Omega_enemy = Omega_enemy_t.Result;
+                            res.Omega_enemy_won = Omega_enemy_won_t.Result;
+                            res.Omega_enemy_loose = Omega_enemy_loose_t.Result;
+                            res.TimeAver = TimeAver_t.Result;
+                            res.TimeAver_we_won = TimeAver_we_won_t.Result;
+                            res.TimeAver_enemy_won = TimeAver_enemy_won_t.Result;
                             res.We = _we;
                             res.Enemy = _enemy;
                             return res;
