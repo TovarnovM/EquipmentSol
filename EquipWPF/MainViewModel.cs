@@ -15,36 +15,43 @@ using System.Threading;
 namespace EquipWPF {
     public class MainViewModel: INotifyPropertyChanged {
         public MainViewModel() {
-            Model1 = GetNewModel("Enemy");
+            Model1 = GetNewModel("ВС без ПИС");
             Model1.PlotType = PlotType.Cartesian;
-            Model2 = GetNewModel("Me");
+            Model2 = GetNewModel("ВС с ПИС");
             Model2.PlotType = PlotType.Cartesian;
 
             Model3 = GetNewModel("Stats");
+            Model3.Axes[0].Title = "Дистанция, м";
+            Model3.Axes[1].Title = "% побед; Время дуэли, с; Кол-во боеприпасов, шт.";
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.Green,
-                Title = "We won, %",
-                StrokeThickness = 3
+                Title = "ВС с ПИС побед, %",
+                StrokeThickness = 3,
+                Smooth = true
             });
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.Red,
-                Title = "Enemy won, %",
-                StrokeThickness = 3
+                Title = "ВС без ПИС побед, %",
+                StrokeThickness = 3,
+                Smooth = true
             });
             Model3.Series.Add(new LineSeries() {
-                Color = OxyColors.Bisque,
-                Title = "TimeAver, s",
-                StrokeThickness = 3
+                Color = OxyColors.Chocolate,
+                Title = "Среднее время дуэли, с",
+                StrokeThickness = 3,
+                Smooth = true
             });
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.DarkSeaGreen,
-                Title = "OmegaAver we",
-                StrokeThickness = 3
+                Title = "Среднее кол-во потраченных боеприпасов (с ПИС), шт.",
+                StrokeThickness = 3,
+                Smooth = true
             });
             Model3.Series.Add(new LineSeries() {
                 Color = OxyColors.MediumVioletRed,
-                Title = "OmegaAver enemy",
-                StrokeThickness = 3
+                Title = "Среднее кол-во потраченных боеприпасов (без ПИС), шт.",
+                StrokeThickness = 3,
+                Smooth = true
             });
 
             Standing = new AimSurf();
@@ -104,7 +111,7 @@ namespace EquipWPF {
 
         private Fighter GetWe(double distance = 0d) 
         {
-                var we = new Fighter("We");
+                var we = new Fighter("ВС с ПИС");
             we.AimSurf = Standing.CopyMe();
             WeaponBase weap = WeaponFactory.Get("AK74") as WeaponBase;
             weap.Ex_line = Ex_we;
@@ -115,11 +122,16 @@ namespace EquipWPF {
             we.HP = HPwe;
             we.Bx = Bx_we;
             we.By = By_we;
+
+            we.TimeBetweenLine_Min = _we.betweenQeue_Min;
+            we.TimeBetweenLine_Max = _we.betweenQeue_Max;
+            we.ReloadTime_Min = _we.reload_Min;
+            we.ReloadTime_Max = _we.reload_Max;
             return we;
 
         }
         private Fighter GetEnemy(double distance = 200d) {
-            var enemy = new Fighter("enemy");
+            var enemy = new Fighter("ВС без ПИС");
             enemy.AimSurf  = Standing.CopyMe();
             WeaponBase weap = WeaponFactory.Get("AK74") as WeaponBase;
             weap.Ex_line = Ex_enemy;
@@ -130,6 +142,11 @@ namespace EquipWPF {
             enemy.HP = HPenemy;
             enemy.Bx = Bx_enemy;
             enemy.By = By_enemy;
+
+            enemy.TimeBetweenLine_Min = _enemy.betweenQeue_Min;
+            enemy.TimeBetweenLine_Max = _enemy.betweenQeue_Max;
+            enemy.ReloadTime_Min = _enemy.reload_Min;
+            enemy.ReloadTime_Max = _enemy.reload_Max;
             return enemy;
 
         }
@@ -152,9 +169,9 @@ namespace EquipWPF {
             env.AddUnit(we);
             env.AddUnit(enemy);
             env.StopFunc += () => {
-                return !we.Dead && !enemy.Dead ? 0:
-                we.Dead ? 1:
-                enemy.Dead ? 2 : 3;
+                return !we.Dead && !enemy.Dead ? 0 :
+                enemy.Dead ? 1 :
+                we.Dead ? 2 : 3;
             };
             env.dT = 0.001;
             return env;
@@ -175,8 +192,8 @@ namespace EquipWPF {
             env.AddUnit(enemy);
             env.StopFunc += () => {
                 return !we.Dead && !enemy.Dead ? 0 :
-                we.Dead ? 1 :
-                enemy.Dead ? 2 : 3;
+                enemy.Dead ? 1 :
+                we.Dead ? 2 : 3;
             };
             env.dT = 0.001;
 
@@ -190,7 +207,7 @@ namespace EquipWPF {
         }
 
         public void DrawAim(PlotModel pm, Fighter f) {
-            pm.Title = $"Name = {f.Name} ;  HP = {f.HP} ;  Dead = {f.Dead}";
+            pm.Title = $"Name = {f.Name} ;  HP = {f.HP:G2} ;  Dead = {f.Dead}";
 
 
             pm.Series.Clear();
@@ -279,19 +296,23 @@ namespace EquipWPF {
         public int NIter { get; set; } = 10000;
 
         private object _lock = new object();
-
-        public void Start(bool hits = true) {
+        public void CancelTasks() {
             if(Tasks.Count > 0) {
                 CTS.Cancel();
                 lock(_lock) {
                     Tasks.Clear();
                 }
-                
+
             }
+        }
+
+        public void Start(bool hits = true) {
+            CancelTasks();
 
             Progress = 0;
             Minimum = 0;
-            Maximum = Math.Ceiling((DistanceMax - DistanceMin) / DistanceShag) * (NIter+9);
+            int pr = NIter / (9);
+            Maximum = Math.Ceiling((DistanceMax - DistanceMin) / DistanceShag +1) * (NIter+pr*9);
             Tasks.Capacity = (int)Maximum + 1;
             CTS = new CancellationTokenSource();
             var ct = CTS.Token;
@@ -305,7 +326,7 @@ namespace EquipWPF {
                 var lmbda = new Func<object,GLEnviroment>((d) => {
                     var env = GetOneTest((double)d);
                     env.dT = 0.01;
-                    env.MaxTime = 60;
+                    env.MaxTime = 120;
                     env.Start();
                     if(hits) {
                         (env.Units[0] as Fighter).ClearStats();
@@ -314,7 +335,7 @@ namespace EquipWPF {
 
                     return env;
                 });
-
+                
                 while(dist <= DistanceMax || !lastLap) {
                     var tsk = Task.Factory.StartNew<Resulter>(
                         (st) => {
@@ -338,23 +359,23 @@ namespace EquipWPF {
                             var draw = lstenv.Except(wewon).Except(enemywon).ToList();
 
                             var Omega_we_t = Task.Factory.StartNew<double>(_ => lstenv.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count),ct);
-                            Omega_we_t.ContinueWith((t) => Progress++);
+                            Omega_we_t.ContinueWith((t) => Progress+= pr);
                             var Omega_we_won_t = Task.Factory.StartNew<double>(_ => wewon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count),ct);
-                            Omega_we_won_t.ContinueWith((t) => Progress++);
+                            Omega_we_won_t.ContinueWith((t) => Progress += pr);
                             var Omega_we_loose_t = Task.Factory.StartNew<double>(_ => enemywon.Select(e => e.Units[0] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count),ct);
-                            Omega_we_loose_t.ContinueWith((t) => Progress++);
+                            Omega_we_loose_t.ContinueWith((t) => Progress += pr);
                             var Omega_enemy_t = Task.Factory.StartNew<double>(_ => lstenv.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / lstenv.Count),ct);
-                            Omega_enemy_t.ContinueWith((t) => Progress++);
+                            Omega_enemy_t.ContinueWith((t) => Progress += pr);
                             var Omega_enemy_won_t = Task.Factory.StartNew<double>(_ => enemywon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / enemywon.Count),ct);
-                            Omega_enemy_won_t.ContinueWith((t) => Progress++);
+                            Omega_enemy_won_t.ContinueWith((t) => Progress += pr);
                             var Omega_enemy_loose_t = Task.Factory.StartNew<double>(_ => wewon.Select(e => e.Units[1] as Fighter).Aggregate(0d,(s,next) => s += next.Omega,(s) => s / wewon.Count),ct);
-                            Omega_enemy_loose_t.ContinueWith((t) => Progress++);
+                            Omega_enemy_loose_t.ContinueWith((t) => Progress += pr);
                             var TimeAver_t = Task.Factory.StartNew<double>(_ => lstenv.Aggregate(0d, (s,next)=>s+=next.Time, (s) => s/ lstenv.Count),ct);
-                            TimeAver_t.ContinueWith((t) => Progress++);
+                            TimeAver_t.ContinueWith((t) => Progress += pr);
                             var TimeAver_we_won_t = Task.Factory.StartNew<double>(_ => wewon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / wewon.Count),ct);
-                            TimeAver_we_won_t.ContinueWith((t) => Progress++);
+                            TimeAver_we_won_t.ContinueWith((t) => Progress += pr);
                             var TimeAver_enemy_won_t = Task.Factory.StartNew<double>(_ => enemywon.Aggregate(0d,(s,next) => s += next.Time,(s) => s / enemywon.Count),ct);
-                            TimeAver_enemy_won_t.ContinueWith((t) => Progress++);
+                            TimeAver_enemy_won_t.ContinueWith((t) => Progress += pr);
                             Task.WaitAll(Omega_we_t,Omega_we_won_t,Omega_we_loose_t,Omega_enemy_t,Omega_enemy_won_t,Omega_enemy_loose_t,TimeAver_t,TimeAver_we_won_t,TimeAver_enemy_won_t);
                             res.WeWonPerc = (double)wewon.Count / lstenv.Count;
                             res.EnemyWonPerc = (double)enemywon.Count / lstenv.Count;
@@ -391,8 +412,11 @@ namespace EquipWPF {
                     //Tasks.Last().ContinueWith((env) => UpdateStats());
 
                     dist += DistanceShag;
-                    if(dist == DistanceMax)
+                    if(dist == DistanceMax && !lastLap) {
+                        lastLap = true;
                         continue;
+                    }
+                        
                     if(!lastLap && dist > DistanceMax) {
                         lastLap = true;
                         dist = DistanceMax;
@@ -461,9 +485,9 @@ namespace EquipWPF {
             Ex_enemy = enemy.Ex / 10000;
             Ey_enemy = enemy.Ey / 10000;
 
-            DistanceMin = enemy.mindist;
-            DistanceMax = enemy.maxdist;
-            DistanceShag = enemy.deltadist;
+            DistanceMin = we.mindist;
+            DistanceMax = we.maxdist;
+            DistanceShag = we.deltadist;
             NIter = (int)enemy.stepcount;
         }
 

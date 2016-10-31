@@ -17,9 +17,11 @@ namespace EquipWPF {
     public struct sdata {
         public double lowborder;//нижяя граница времени до 1 попадания
         public double topborder;//верхняя
-        public double betweenQeue;//время вежду очередями
+        public double betweenQeue_Min;//время вежду очередями
+        public double betweenQeue_Max;//время вежду очередями
         public double HP;//жызни
-        public double reload;//время перезарядки
+        public double reload_Min;//время перезарядки
+        public double reload_Max;//время перезарядки
         public double Ex;
         public double Ey;
         public double Bx;
@@ -65,59 +67,68 @@ namespace EquipWPF {
         }
 
         public void Loaddata() {
-            sdata enemy, we;
-            Double.TryParse(low1.Text,out enemy.lowborder);
+            sdata we, enemy;
+            Double.TryParse(low1.Text,out we.lowborder);
 
-            Double.TryParse(top1.Text,out enemy.topborder);
+            Double.TryParse(top1.Text,out we.topborder);
 
-            Double.TryParse(betweenQeues1.Text,out enemy.betweenQeue);
+            Double.TryParse(betweenQeues1_Min.Text,out we.betweenQeue_Min);
+            Double.TryParse(betweenQeues1_Max.Text,out we.betweenQeue_Max);
 
-            Double.TryParse(HP1.Text,out enemy.HP);
+            Double.TryParse(HP1.Text,out we.HP);
 
-            Double.TryParse(reload1.Text,out enemy.reload);
+            Double.TryParse(reload1_Min.Text,out we.reload_Min);
+            Double.TryParse(reload1_Max.Text,out we.reload_Max);
 
-            Double.TryParse(Ex1.Text,out enemy.Ex);
+            Double.TryParse(Ex1.Text,out we.Ex);
 
-            Double.TryParse(Ey1.Text,out enemy.Ey);
+            Double.TryParse(Ey1.Text,out we.Ey);
 
-            Double.TryParse(Bx.Text,out enemy.Bx);
-            Double.TryParse(By.Text,out enemy.By);
+            Double.TryParse(Bx.Text,out we.Bx);
+            Double.TryParse(By.Text,out we.By);
 
-            Double.TryParse(mindist1.Text,out enemy.mindist);
+            Double.TryParse(mindist1.Text,out we.mindist);
 
-            Double.TryParse(maxdist1.Text,out enemy.maxdist);
+            Double.TryParse(maxdist1.Text,out we.maxdist);
 
-            Double.TryParse(stepcount1.Text,out enemy.stepcount);
+            Double.TryParse(stepcount1.Text,out we.stepcount);
 
-            Double.TryParse(deltadist1.Text,out enemy.deltadist);
+            Double.TryParse(deltadist1.Text,out we.deltadist);
 
 
 
-            Double.TryParse(low2.Text,out we.lowborder);
+            Double.TryParse(low2.Text,out enemy.lowborder);
 
-            Double.TryParse(top2.Text,out we.topborder);
+            Double.TryParse(top2.Text,out enemy.topborder);
 
-            Double.TryParse(betweenQeues2.Text,out we.betweenQeue);
+            Double.TryParse(betweenQeues2_Min.Text,out enemy.betweenQeue_Min);
+            Double.TryParse(betweenQeues2_Max.Text,out enemy.betweenQeue_Max);
 
-            Double.TryParse(HP2.Text,out we.HP);
+            Double.TryParse(HP2.Text,out enemy.HP);
 
-            Double.TryParse(reload2.Text,out we.reload);
+            Double.TryParse(reload2_Min.Text,out enemy.reload_Min);
+            Double.TryParse(reload2_Max.Text,out enemy.reload_Max);
 
-            Double.TryParse(Ex2.Text,out we.Ex);
+            Double.TryParse(Ex2.Text,out enemy.Ex);
 
-            Double.TryParse(Ey2.Text,out we.Ey);
+            Double.TryParse(Ey2.Text,out enemy.Ey);
 
-            Double.TryParse(Bx2.Text,out we.Bx);
-            Double.TryParse(By2.Text,out we.By);
+            Double.TryParse(Bx2.Text,out enemy.Bx);
+            Double.TryParse(By2.Text,out enemy.By);
 
-            we.mindist = enemy.mindist;
-            we.maxdist = enemy.maxdist;
-            we.stepcount = enemy.stepcount;
-            we.deltadist = enemy.stepcount;
+            enemy.mindist = we.mindist;
+            enemy.maxdist = we.maxdist;
+            enemy.stepcount = we.stepcount;
+            enemy.deltadist = we.stepcount;
 
 
             var vm = DataContext as MainViewModel;
-            vm.LoadData(we,enemy);
+            vm.LoadData(we, enemy);
+        }
+
+        private void Window_Closed(object sender,EventArgs e) {
+            var vm = DataContext as MainViewModel;
+            vm.CancelTasks();
         }
 
         /*

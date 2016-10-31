@@ -18,6 +18,10 @@ namespace EquipWPF {
         public IAimSurface AimSurf { get; set; }
         public List<Tuple<double,Vector>> Hits { get; set; } = new List<Tuple<double,Vector>>();
         public int Omega { get; set; } = 0;
+        public double TimeBetweenLine_Min { get; set; }
+        public double TimeBetweenLine_Max { get; set; }
+        public double ReloadTime_Min { get; set; }
+        public double ReloadTime_Max { get; set; }
 
         [XmlIgnore]
         public IWeapon Weapon { get; set; }
@@ -44,8 +48,8 @@ namespace EquipWPF {
         }
         public void Reload() {
             Weapon.RoundInMagaz = Weapon.RoundInMagazMax;
-            TimeToNextLine = rnd.GetDouble(Weapon.TimeBetweenLines.Min,Weapon.TimeBetweenLines.Min) +
-                             rnd.GetDouble(Weapon.ReloadTime.Min,Weapon.ReloadTime.Min);
+            TimeToNextLine = rnd.GetDouble(TimeBetweenLine_Min,TimeBetweenLine_Max) +
+                             rnd.GetDouble(ReloadTime_Min,ReloadTime_Max);
         }
         public void Shoot() {
             int hitsInLine = rnd.GetInt(Weapon.RoundInLine.Min,Weapon.RoundInLine.Max + 1);
@@ -66,7 +70,7 @@ namespace EquipWPF {
             }
             Weapon.RoundInMagaz -= hitsInLine;
             Omega += hitsInLine;
-            TimeToNextLine = rnd.GetDouble(Weapon.TimeBetweenLines.Min,Weapon.TimeBetweenLines.Min);
+            TimeToNextLine = rnd.GetDouble(TimeBetweenLine_Min,TimeBetweenLine_Max);
 
         }
 
@@ -97,6 +101,11 @@ namespace EquipWPF {
 
             res.HP = HP;
             res.Dead = Dead;
+
+            res.TimeBetweenLine_Min = TimeBetweenLine_Min;
+            res.TimeBetweenLine_Max = TimeBetweenLine_Max;
+            res.ReloadTime_Min = ReloadTime_Min;
+            res.ReloadTime_Max = ReloadTime_Max;
 
 
             if(!onlyInvariants) {
