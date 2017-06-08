@@ -15,7 +15,7 @@ namespace EquipWPF {
 
         public double Bx { get; set; }
         public double By { get; set; }
-        public IAimSurface AimSurf { get; set; }
+        public IAimSurface AimSurf { get; set; } = new AimSurf();
         public List<Tuple<double,Vector>> Hits { get; set; } = new List<Tuple<double,Vector>>();
         public int Omega { get; set; } = 0;
         public double TimeBetweenLine_Min { get; set; }

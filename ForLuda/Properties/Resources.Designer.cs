@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EquipWPF.Properties {
+namespace ForLuda.Properties {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace EquipWPF.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public class Resources {
+    internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace EquipWPF.Properties {
         ///   Возвращает кэшированный экземпляр ResourceManager, использованный этим классом.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Resources.ResourceManager ResourceManager {
+        internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("EquipWPF.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ForLuda.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,12 +51,32 @@ namespace EquipWPF.Properties {
         ///   обращений к ресурсу с помощью этого класса ресурса со строгой типизацией.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static global::System.Globalization.CultureInfo Culture {
+        internal static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на x1;y1;x2;y2;P
+        ///-200;650;200;0;0,47635434728940
+        ///-1100;650;-200;0;0,01182227635540
+        ///1100;650;200;0;0,01182227635540
+        ///-1100;-350;1100;0;0,49921268747591
+        ///-1100;-1000;1100;-350;0,00008350483186
+        ///-1100;-1150;1100;-1000;0,00000000002645
+        ///-1700;-150;-1100;-650;0,00000000003435
+        ///-1700;-650;-1100;-1750;0,00000000000000
+        ///1100;-150;1700;-650;0,00000000003435
+        ///1100;-650;1700;-1750;0,00000000000000
+        ///.
+        /// </summary>
+        internal static string _def {
+            get {
+                return ResourceManager.GetString("_def", resourceCulture);
             }
         }
     }

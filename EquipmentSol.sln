@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipWPF", "EquipWPF\EquipWPF.csproj", "{1131447A-2F9F-4763-8DFC-208B9DFD6613}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "parallel_training2", "parallel_training2\parallel_training2.csproj", "{FC4F0E68-11CD-47B2-B61D-587AE23C37A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "parallel_training3", "parallel_training3\parallel_training3.csproj", "{E859DF27-346A-4ABD-B956-215F61CEFAE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForLuda", "ForLuda\ForLuda.csproj", "{AFA37303-1265-4FC2-871D-59D378267F23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -167,6 +169,18 @@ Global
 		{E859DF27-346A-4ABD-B956-215F61CEFAE9}.Release|x64.Build.0 = Release|Any CPU
 		{E859DF27-346A-4ABD-B956-215F61CEFAE9}.Release|x86.ActiveCfg = Release|Any CPU
 		{E859DF27-346A-4ABD-B956-215F61CEFAE9}.Release|x86.Build.0 = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|x64.Build.0 = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Debug|x86.Build.0 = Debug|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|x64.ActiveCfg = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|x64.Build.0 = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFA37303-1265-4FC2-871D-59D378267F23}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
